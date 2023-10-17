@@ -143,3 +143,53 @@ create policy "Can only view own subs data." on subscriptions for select using (
  */
 drop publication if exists supabase_realtime;
 create publication supabase_realtime for table products, prices;
+
+
+/**
+* COUNTRIES, BANKS, STEPS
+* Note: 
+*/
+CREATE TABLE countries (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  country VARCHAR(255) NOT NULL,
+  flag VARCHAR(255) NOT NULL
+  );
+
+CREATE TABLE banks (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  logo VARCHAR(255) NOT NULL,
+  country_id UUID REFERENCES countries(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+alter table banks enable row level security;
+create policy "Allow public read-only access." on banks for select using (true);
+
+CREATE TABLE payments (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  type VARCHAR(255) NOT NULL,
+  symbol VARCHAR(255) NOT NULL,
+  limits VARCHAR(255),
+  information VARCHAR(255),
+  bank_id UUID REFERENCES banks(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+alter table payments enable row level security;
+create policy "Allow public read-only access." on payments for select using (true);
+
+CREATE TABLE steps (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  st1_pic VARCHAR(255),
+  st1_text VARCHAR(255),
+  st2_pic VARCHAR(255),
+  st2_text VARCHAR(255),
+  st3_pic VARCHAR(255),
+  st3_text VARCHAR(255),
+  st4_pic VARCHAR(255),
+  st4_text VARCHAR(255),
+  st5_pic VARCHAR(255),
+  st5_text VARCHAR(255),
+  st6_pic VARCHAR(255),
+  st6_text VARCHAR(255),
+  payment_id UUID REFERENCES payments(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+alter table steps enable row level security;
+create policy "Allow public read-only access." on steps for select using (true);
